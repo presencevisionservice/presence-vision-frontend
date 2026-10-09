@@ -51,9 +51,10 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link to="/" className="group flex items-center gap-3" aria-label="Presence Home">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 p-0.5 shadow-[0_0_20px_rgba(34,211,238,0.35)] transition-transform duration-300 group-hover:scale-105">
-            <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-[#050A12]">
-              <ScanFace size={18} className="text-cyan-400 transition-colors group-hover:text-cyan-300" />
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105">
+            <div className="flex h-full w-full items-center justify-center bg-transparent">
+              {/* <ScanFace size={18} className="text-cyan-400 transition-colors group-hover:text-cyan-300" /> */}
+              <img src="/logo.png" className='object-contain object-center w-9/10 h-9/10' alt="" srcset="" />
             </div>
           </div>
           <div className="flex flex-col">

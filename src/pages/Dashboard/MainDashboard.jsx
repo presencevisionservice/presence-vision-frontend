@@ -96,11 +96,22 @@ function MainDashboard() {
     <section className="w-full h-screen flex items-stretch bg-[#050A12] text-white font-['Poppins',sans-serif] antialiased [overflow-x:clip]">
 
       {/* ── Sidebar ── */}
-      <aside className="w-64 shrink-0 h-full border-r border-white/[0.08] bg-white/[0.02] backdrop-blur-xl flex flex-col p-6">
-
-        <div className="flex items-center gap-2 mb-10 px-2">
-          <ScanFace size={22} className="text-cyan-400" />
-          <h2 className="text-base font-bold tracking-tight">Presence Vision</h2>
+      <aside className="
+        w-16 sm:w-20 lg:w-64
+        shrink-0 h-full
+        border-r border-white/[0.08] bg-white/[0.02] backdrop-blur-xl
+        flex flex-col p-3 sm:p-4 lg:p-6
+        transition-[width] duration-300
+      ">
+        <div className="flex items-center justify-center lg:justify-start gap-2 mb-8 lg:mb-10 lg:px-2">
+          <img
+            src="/logo.png"
+            alt="Presence Vision logo"
+            className="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 shrink-0 object-contain"
+          />
+          <h2 className="hidden lg:block text-base font-bold tracking-tight whitespace-nowrap">
+            Presence Vision
+          </h2>
         </div>
 
         <nav className="flex flex-col gap-2">
@@ -110,28 +121,28 @@ function MainDashboard() {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300 border ${
-                  active
-                    ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.15)]'
-                    : 'border-transparent text-slate-400 hover:text-white hover:bg-white/[0.05]'
-                }`}
+                title={label} // tooltip when label is hidden
+                className={`group flex items-center justify-center lg:justify-start gap-3 rounded-xl
+                  px-3 lg:px-4 py-3 text-sm font-medium transition-all duration-300 border ${
+                    active
+                      ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.15)]'
+                      : 'border-transparent text-slate-400 hover:text-white hover:bg-white/[0.05]'
+                  }`}
               >
                 <Icon
                   size={18}
-                  className={
+                  className={`shrink-0 ${
                     active
                       ? 'text-cyan-300'
                       : 'text-slate-500 group-hover:text-cyan-300 transition-colors'
-                  }
+                  }`}
                 />
-                {label}
+                <span className="hidden lg:inline whitespace-nowrap">{label}</span>
               </button>
             );
           })}
         </nav>
-
       </aside>
-
       {/* ── Main Column ── */}
       <div className="flex-1 h-full flex flex-col min-w-0">
 
