@@ -141,7 +141,7 @@ function EnrollInSelectedSection({ section, onClose, onSuccess }) {
     if (!sessionId) return;
 
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsHost = '127.0.0.1:8000';
+    const wsHost = 'presence-backend-hnix.onrender.com';
     const wsUrl = `${wsProtocol}//${wsHost}/ws/session/${sessionId}/`;
 
     try {
