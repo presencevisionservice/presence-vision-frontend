@@ -2,18 +2,21 @@ import { useEffect, useState } from 'react';
 import { LayoutDashboard, Layers, BookOpen, ScanFace, ShieldX, Loader2 } from 'lucide-react';
 import OverviewTab from './Tabs/OverviewTab';
 import SectionsTab from './Tabs/SectionsTab/SectionsTab';
+import EnrollmentTab from './Tabs/EnrollmentTab/EnrollmentTab';
 import api from '../../services/axios';
 
 /* ── Nav config ─────────────────────────────────────────────── */
 const NAV = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard, blurb: 'Welcome back, Instructor' },
   { id: 'sections', label: 'Sections', icon: Layers,           blurb: 'Manage your class sections' },
+  { id: 'enrollment', label: 'Enrollment', icon: Layers,           blurb: 'Enroll Students In Sections' },
 ];
 
 /* ── Tab registry: id → component ───────────────────────────── */
 const TAB_COMPONENTS = {
   overview: OverviewTab,
   sections: SectionsTab,
+  enrollment: EnrollmentTab,
 };
 
 function MainDashboard() {
