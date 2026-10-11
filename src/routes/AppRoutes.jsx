@@ -2,11 +2,14 @@ import React, { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import {PuffLoader} from 'react-spinners';
 import { motion } from 'framer-motion';
+import { THEME } from '../pages/theme.js';
 
 const HomePage = lazy(() => import('../pages/HomePage'));
 const AboutPage = lazy(() => import('../pages/AboutPage'));
 const ContactPage = lazy(() => import('../pages/ContactPage'));
 const PrivacyPage = lazy(() => import('../pages/PrivacyPage'));
+const FeaturesPage = lazy(() => import('../pages/FeaturesPage'));
+const PricingPage = lazy(() => import('../pages/PricingPage'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const DashboardPage = lazy(() => import('../pages/Dashboard/MainDashboard'));
 const SignupPage = lazy(() => import('../pages/SignUpPage'));
@@ -18,10 +21,10 @@ const GoogleRegistrationRedirect = lazy(() => import('../pages/GoogleRegistratio
 export default function AppRoutes() {
   return (
     <Suspense fallback={
-    <motion.div className="flex flex-col justify-center items-center h-screen w-full bg-[#050A12]">
+    <motion.div className="flex flex-col justify-center items-center h-screen w-full bg-[#f7f7f4]">
 
-      <PuffLoader color='white' size={80} />
-      <h2 className='text-xl font-semibold mt-6' style={{'fontFamily' : "Poppins"}}>Patience Is Appreciated</h2>
+      <PuffLoader color='#0d0d0f' size={80} />
+      <h2 className='text-xl font-semibold mt-6 text-[#0d0d0f] ' style={{'fontFamily' : "Poppins"}}>Patience Is Appreciated</h2>
 
     </motion.div>
   }>
@@ -30,6 +33,8 @@ export default function AppRoutes() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/signup" element={<SignupPage />} />

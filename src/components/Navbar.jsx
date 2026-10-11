@@ -1,28 +1,26 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ScanFace, ArrowUpRight, LogIn, LayoutDashboard } from 'lucide-react';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { Menu, X, ScanFace } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
+import { THEME } from '../pages/theme';
 
 const LINKS = [
   { to: '/about', label: 'About' },
+  { to: '/features', label: 'Features' },
+  { to: '/pricing', label: 'Pricing' },
   { to: '/contact', label: 'Contact' },
   { to: '/privacy', label: 'Privacy' },
 ];
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const location = useLocation();
-  const { user, loading: authChecking } = useAuth();
-  const authenticated = Boolean(user);
-
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 28 });
+  const { pathname } = useLocation();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 15);
-    const onResize = () => window.innerWidth >= 768 && setIsOpen(false);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onResize = () => window.innerWidth >= 768 && setOpen(false);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
@@ -32,136 +30,49 @@ export default function Navbar() {
     };
   }, []);
 
+  const cta = user ? { to: '/dashboard', label: 'Dashboard' } : { to: '/contact', label: 'Book a demo' };
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-3 sm:px-6 font-['Poppins',sans-serif]">
+    <header style={THEME} className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-8">
       <nav
-        aria-label="Main Navigation"
-        className={`relative mx-auto flex max-w-6xl items-center justify-between rounded-2xl border px-4 py-2.5 transition-all duration-300 ${
-          scrolled || isOpen
-            ? 'border-cyan-500/20 bg-[#050A12]/85 shadow-[0_10px_35px_rgba(0,0,0,0.8)] backdrop-blur-xl'
-            : 'border-white/10 bg-white/[0.02] backdrop-blur-md'
+        aria-label="Main navigation"
+        style={scrolled || open ? { background: 'var(--bg-80)' } : undefined}
+        className={`relative mx-auto flex max-w-[1400px] items-center justify-between rounded-full border py-2 pl-3 pr-2 transition-all duration-300 ${
+          scrolled || open ? ' shadow-[0_10px_40px_-20px_rgba(0,0,0,0.15)] backdrop-blur-sm' : 'border-transparent'
         }`}
       >
-        {/* Scroll Progress Bar */}
-        <motion.span
-          aria-hidden
-          style={{ scaleX }}
-          className="absolute -bottom-px left-4 right-4 h-[2px] origin-left rounded-full bg-gradient-to-r from-cyan-400 via-teal-400 to-indigo-500 shadow-[0_0_10px_rgba(34,211,238,0.8)]"
-        />
-
-        {/* Logo */}
-        <Link to="/" className="group flex items-center gap-3" aria-label="Presence Home">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105">
-            <div className="flex h-full w-full items-center justify-center bg-transparent">
-              {/* <ScanFace size={18} className="text-cyan-400 transition-colors group-hover:text-cyan-300" /> */}
-              <img src="/logo.png" className='object-contain object-center w-9/10 h-9/10' alt="" srcset="" />
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-bold tracking-tight text-white transition-colors group-hover:text-cyan-300">
-              Presence<span className="text-cyan-400">.</span>
-            </span>
-            <span className="text-[8px] font-semibold tracking-widest text-cyan-400/80 uppercase -mt-1">
-              AI Vision System
-            </span>
-          </div>
+        <Link to="/" aria-label="Presence home" className="group flex items-center gap-2.5 text-[var(--fg)]">
+          <span className="grid h-9 w-9 place-items-center rounded-full flex items-center justify-center content-center transition-transform duration-300">
+            <img src="/logo.png" className="w-9/10 h-9/10 object-contain object-center" alt="" />
+          </span>
+          <span className="text-lg font-semibold tracking-tight">Presence</span>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <div className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 backdrop-blur-md md:flex">
-          {LINKS.map((l) => {
-            const isActive = location.pathname === l.to;
-            return (
-              <Link
-                key={l.to}
-                to={l.to}
-                className={`relative px-4 py-1.5 text-xs font-medium transition-all duration-200 rounded-full ${
-                  isActive
-                    ? 'text-cyan-300 bg-cyan-500/15 border border-cyan-500/30 shadow-[0_0_12px_rgba(34,211,238,0.2)]'
-                    : 'text-slate-300 hover:text-white hover:bg-white/[0.06]'
-                }`}
-              >
-                {l.label}
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Auth Action Button */}
-        <div className="hidden items-center gap-2 md:flex">
-          {authChecking ? (
-            <div className="h-9 w-28 animate-pulse rounded-xl bg-white/10" aria-hidden />
-          ) : authenticated ? (
-            <Link
-              to="/dashboard"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-4 py-2 text-xs font-semibold text-slate-950 shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(34,211,238,0.5)]"
-            >
-              <LayoutDashboard size={14} />
-              <span>Dashboard</span>
-              <ArrowUpRight size={12} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        <div className="hidden items-center gap-8 md:flex">
+          {LINKS.map((l) => (
+            <Link key={l.to} to={l.to} className={`text-sm transition-colors ${pathname === l.to ? 'text-[var(--fg)]' : 'text-[var(--muted)] hover:text-[var(--fg)]'}`}>
+              {l.label}
             </Link>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-white transition-all duration-300 hover:border-cyan-500/40 hover:bg-cyan-500/10 hover:text-cyan-300"
-              >
-                <LogIn size={13} className="text-cyan-400" />
-                <span>Log In</span>
-              </Link>
-              <Link
-                to="/admin"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-2 text-xs font-bold text-slate-950 shadow-[0_0_20px_rgba(34,211,238,0.25)] transition-all duration-300 hover:scale-105"
-              >
-                Get Started
-              </Link>
-            </>
-          )}
+          ))}
         </div>
 
-        {/* Mobile Toggle Button */}
-        <button
-          onClick={() => setIsOpen((v) => !v)}
-          className="flex md:hidden h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] text-slate-200 transition-colors hover:bg-white/10"
-          aria-label="Toggle menu"
-          aria-expanded={isOpen}
-        >
-          {isOpen ? <X size={20} /> : <Menu size={20} />}
+        <div className="hidden items-center gap-3 md:flex">
+          {!user && !loading && <Link to="/login" className="px-3 text-sm text-[var(--muted)] transition-colors hover:text-[var(--fg)]">Log in</Link>}
+          <Link to={cta.to} className="rounded-full bg-[var(--btn-bg)] px-5 py-2.5 text-sm font-medium text-[var(--btn-fg)] transition-transform hover:scale-[1.04]">
+            {cta.label}
+          </Link>
+        </div>
+
+        <button onClick={() => setOpen((v) => !v)} aria-label="Toggle menu" aria-expanded={open} className="grid h-10 w-10 place-items-center rounded-full border border-[var(--line)] text-[var(--fg)] md:hidden">
+          {open ? <X size={18} /> : <Menu size={18} />}
         </button>
 
-        {/* Mobile Drawer */}
-        {isOpen && (
-          <div className="absolute left-0 right-0 top-full mt-2 flex flex-col gap-2 rounded-2xl border border-white/10 bg-[#060B14]/95 p-4 shadow-2xl backdrop-blur-2xl md:hidden overflow-hidden">
+        {open && (
+          <div style={{ background: 'var(--bg-95)' }} className="absolute left-0 right-0 top-full mt-2 flex flex-col gap-1 rounded-3xl border border-[var(--line)] p-4 backdrop-blur-xl md:hidden">
             {LINKS.map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                onClick={() => setIsOpen(false)}
-                className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-cyan-500/10 hover:text-cyan-300 transition-all"
-              >
-                {l.label}
-              </Link>
+              <Link key={l.to} to={l.to} onClick={() => setOpen(false)} className="rounded-2xl px-4 py-3 text-base text-[var(--fg)] hover:bg-black/5">{l.label}</Link>
             ))}
-            <div className="my-1 h-px w-full bg-white/10" />
-            {authenticated ? (
-              <Link
-                to="/dashboard"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 py-3 text-sm font-bold text-slate-950 shadow-lg"
-              >
-                <LayoutDashboard size={16} />
-                Open Dashboard
-              </Link>
-            ) : (
-              <Link
-                to="/login"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 py-3 text-sm font-semibold text-cyan-300"
-              >
-                <LogIn size={16} />
-                Log In
-              </Link>
-            )}
+            <Link to={cta.to} onClick={() => setOpen(false)} className="mt-2 rounded-full bg-[var(--btn-bg)] py-3 text-center text-sm font-medium text-[var(--btn-fg)]">{cta.label}</Link>
           </div>
         )}
       </nav>

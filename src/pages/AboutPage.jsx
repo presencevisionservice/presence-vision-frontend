@@ -1,15 +1,50 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ScanFace, Cpu, ShieldCheck, Zap, Layers, ArrowRight, Eye, Database, Activity, CheckCircle2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { 
+  ScanFace, Cpu, ShieldCheck, Zap, ArrowUpRight, CheckCircle2, 
+  Eye, Database, Activity, GraduationCap, Lock, Server, Sparkles 
+} from 'lucide-react';
 import Navbar from '../components/Navbar';
+import { THEME } from './theme';
+import { useSlide } from './parallax';
 
-const ARCHITECTURE_STEPS = [
+/* ───────── Shared Styling Helpers (matching HomePage.jsx) ───────── */
+const wrap = 'mx-auto w-full max-w-[1400px] px-5 sm:px-8';
+const h2 = 'text-[clamp(2rem,4.6vw,4.2rem)] font-semibold leading-[1.05] tracking-[-0.035em]';
+const tag = 'rounded-full border border-[var(--line)] bg-white/60 px-3 py-1 text-xs text-[var(--muted)]';
+const iconBadge = 'grid place-items-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent)]';
+
+function Eyebrow({ icon: I, children }) {
+  return (
+    <span className="inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)]">
+      <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]"><I size={13} /></span>
+      {children}
+    </span>
+  );
+}
+
+function Reveal({ children, className = '' }) {
+  return (
+    <motion.div initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} className={className}>
+      {children}
+    </motion.div>
+  );
+}
+
+function Drift({ from, to, className = '', children }) {
+  const ref = useRef(null);
+  const y = useSlide(ref, from, to);
+  return <motion.div ref={ref} style={{ y }} className={`will-change-transform ${className}`}>{children}</motion.div>;
+}
+
+/* ───────── Pipeline Steps Data ───────── */
+const PIPELINE_STEPS = [
   {
     number: "01",
     title: "InsightFace SCRFD Detection",
     tagline: "Sub-millisecond Face Localization",
-    description: "Webcam feeds stream frames asynchronously to our edge inference pipeline. SCRFD accurately detects multi-face bounding boxes even under dynamic lighting and off-axis head poses.",
+    description: "Webcam feeds stream frames asynchronously to our edge inference pipeline. SCRFD accurately detects multi-face bounding boxes even under dynamic lighting and off-axis head poses[cite: 6].",
     icon: Eye,
     stat: "< 12ms frame processing"
   },
@@ -17,7 +52,7 @@ const ARCHITECTURE_STEPS = [
     number: "02",
     title: "MiniFASNetV2 Anti-Spoofing",
     tagline: "Neural Liveness Verification",
-    description: "Before feature extraction, deep convolutional networks evaluate texture micro-patterns and depth reflections, rejecting paper prints, mobile screens, and 3D silicone mask spoofs.",
+    description: "Before feature extraction, deep convolutional networks evaluate texture micro-patterns and depth reflections, rejecting paper prints, mobile screens, and 3D silicone mask spoofs[cite: 6].",
     icon: ShieldCheck,
     stat: "99.8% spoof rejection"
   },
@@ -25,7 +60,7 @@ const ARCHITECTURE_STEPS = [
     number: "03",
     title: "512D ArcFace Vector Extraction",
     tagline: "High-Discriminative Feature Mapping",
-    description: "Deep residual networks project aligned facial landmarks into a 512-dimensional hypersphere embedding, maximizing inter-class separation while normalizing scale and illumination.",
+    description: "Deep residual networks project aligned facial landmarks into a 512-dimensional hypersphere embedding, maximizing inter-class separation while normalizing scale and illumination[cite: 6].",
     icon: Cpu,
     stat: "512-D L2 Normalized"
   },
@@ -33,202 +68,239 @@ const ARCHITECTURE_STEPS = [
     number: "04",
     title: "Qdrant Vector Search & Sync",
     tagline: "Cosine Similarity Matching",
-    description: "Extracted embeddings perform high-speed HNSW vector search against enrolled institutional indexes, immediately logging timestamped attendance to Django REST backend and React console.",
+    description: "Extracted embeddings perform high-speed HNSW vector search against enrolled institutional indexes, immediately logging timestamped attendance to Django REST backend and React console[cite: 6].",
     icon: Database,
     stat: "Sub-50ms query match"
   },
 ];
 
 const METRICS = [
-  { label: "Verification Latency", value: "< 90ms", desc: "End-to-end frame capture to log" },
-  { label: "Spoof Prevention", value: "99.8%", desc: "MiniFASNetV2 liveness accuracy" },
-  { label: "Vector Search Capacity", value: "100k+", desc: "Embeddings per institution node" },
-  { label: "Hardware Agnostic", value: "100%", desc: "Runs on webcams, IP cams & RTSP" },
+  { label: "Verification Latency", value: "< 90ms", desc: "End-to-end frame capture to log[cite: 6]" },
+  { label: "Spoof Prevention", value: "99.8%", desc: "MiniFASNetV2 liveness accuracy[cite: 6]" },
+  { label: "Vector Search Capacity", value: "100k+", desc: "Embeddings per institution node[cite: 6]" },
+  { label: "Hardware Agnostic", value: "100%", desc: "Runs on webcams, IP cams & RTSP[cite: 6]" },
 ];
 
-export default function AboutPage() {
+/* ───────── About Hero Component ───────── */
+function AboutHero() {
+  const heroRef = useRef(null);
+  const line1 = useSlide(heroRef, '0vw', '-8vw', { offset: ['start start', 'end start'], always: true });
+  const line2 = useSlide(heroRef, '0vw', '8vw', { offset: ['start start', 'end start'], always: true });
+  const blobY = useSlide(heroRef, 0, 140, { offset: ['start start', 'end start'], always: true });
+
   return (
-    <div className="min-h-screen bg-[#030712] text-white antialiased font-['Poppins',sans-serif]">
-      <Navbar />
+    <section ref={heroRef} className="relative overflow-hidden pb-24 pt-36 sm:pt-44">
+      {/* Soft color wash background */}
+      <motion.div aria-hidden style={{ y: blobY }} className="pointer-events-none absolute -right-32 -top-20 h-[520px] w-[520px] rounded-full opacity-60 blur-3xl">
+        <div className="h-full w-full rounded-full" style={{ background: 'radial-gradient(circle, rgba(0,154,231,.16), transparent 65% )' }} />
+      </motion.div>
 
-      {/* Hero Header */}
-      <section className="relative overflow-hidden pt-36 pb-20 px-6 sm:pt-44">
-        <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[1000px] -translate-x-1/2 bg-[radial-gradient(50%_50%_at_50%_30%,rgba(34,211,238,0.18),rgba(59,130,246,0.08)_60%,transparent_100%)] blur-3xl" />
-        
-        <div className="relative mx-auto max-w-5xl text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-1.5 text-xs font-semibold text-cyan-300 tracking-wide"
-          >
-            <ScanFace size={14} className="text-cyan-400" />
-            <span>Next-Gen Biometric Engineering</span>
-          </motion.div>
+      <div className={wrap}>
+        <span className="mb-8 inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-white/70 px-4 py-1.5 text-xs font-medium text-[var(--muted)] backdrop-blur">
+          <ScanFace size={14} className="text-[var(--accent)]" /> Next-Gen Biometric Engineering
+        </span>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mt-6 text-4xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl leading-tight"
-          >
-            Engineering touchless attendance with{' '}
-            <span className="bg-gradient-to-r from-cyan-300 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              deep neural vision.
-            </span>
-          </motion.h1>
+        <h1 className="text-[clamp(2.6rem,7.5vw,7.5rem)] font-semibold leading-[0.98] tracking-[-0.045em] text-[var(--fg)]">
+          <motion.span initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} style={{ x: line1 }} className="block">
+            Engineering touchless
+          </motion.span>
+          <motion.span initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.1, ease: [0.22, 1, 0.36, 1] }} style={{ x: line2 }} className="block text-[var(--accent)]">
+            attendance with AI.
+          </motion.span>
+        </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mx-auto mt-6 max-w-3xl text-base text-slate-300 sm:text-xl font-light leading-relaxed"
-          >
-            Presence AI bridges edge computer vision models with real-time distributed backends—delivering frictionless identity recognition and live liveness detection without physical queuing.
-          </motion.p>
-        </div>
-      </section>
+        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8 }} className="mt-8 max-w-2xl text-base leading-relaxed text-[var(--muted)] sm:text-lg">
+          Presence bridges state-of-the-art edge computer vision models with real-time distributed backends—delivering frictionless identity recognition and live liveness verification without physical queuing[cite: 6].
+        </motion.p>
+      </div>
+    </section>
+  );
+}
 
-      {/* Visual System Overview Grid */}
-      <section className="px-6 py-12">
-        <div className="mx-auto max-w-6xl grid gap-8 lg:grid-cols-12 items-center">
-          <div className="lg:col-span-6 space-y-6">
-            <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
-              System Architecture & Mission
-            </span>
-            <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
-              Zero manual roll calls. Pure mathematical precision.
-            </h2>
-            <p className="text-slate-300 text-sm font-light leading-relaxed sm:text-base">
-              Traditional attendance tracking suffers from proxy marking, wasted lecture hours, and cumbersome physical card readers. Presence AI transforms standard laptop webcams and IP feeds into intelligent biometric entry points using state-of-the-art computer vision models.
-            </p>
-            <div className="space-y-3 pt-2">
-              {[
-                'Non-reversible 512D ArcFace vector embeddings preserve privacy',
-                'Dual-stream liveness detection halts print and screen attacks',
-                'Asynchronous frame queues ensure continuous high-FPS streaming',
-                'Instant synchronization with academic administration dashboards'
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-3 text-sm text-slate-200">
-                  <CheckCircle2 size={18} className="text-cyan-400 shrink-0" />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
+/* ───────── Mission & Architecture Overview ───────── */
+function MissionSection() {
+  return (
+    <section className="border-t border-[var(--line)] py-24 sm:py-32">
+      <div className={`${wrap} grid gap-16 lg:grid-cols-2 lg:items-center`}>
+        <Reveal>
+          <Eyebrow icon={Sparkles}>Mission & Architecture</Eyebrow>
+          <h2 className={`${h2} mt-4`}>Zero manual roll calls. Pure mathematical precision.</h2>
+          <p className="mt-6 text-sm leading-relaxed text-[var(--muted)] sm:text-base">
+            Traditional attendance tracking suffers from proxy marking, wasted lecture hours, and cumbersome physical card readers. Presence transforms standard laptop webcams and IP feeds into intelligent biometric entry points[cite: 6].
+          </p>
+          <div className="mt-8 space-y-3">
+            {[
+              'Non-reversible 512D ArcFace vector embeddings preserve student privacy[cite: 6]',
+              'Dual-stream liveness detection halts print and screen spoof attacks[cite: 6]',
+              'Asynchronous frame queues ensure continuous high-FPS camera streaming[cite: 6]',
+              'Instant synchronization with academic administration dashboards[cite: 6]'
+            ].map((text, idx) => (
+              <div key={idx} className="flex items-center gap-3 text-sm text-[var(--fg)]">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]"><CheckCircle2 size={14} /></span>
+                <span>{text}</span>
+              </div>
+            ))}
           </div>
+        </Reveal>
 
-          <div className="lg:col-span-6">
-            <div className="relative overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-b from-cyan-950/30 to-[#030712] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+        <Reveal>
+          <div className="relative overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-[0_30px_70px_-30px_rgba(0,0,0,0.15)]">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-[var(--card)]">
               <img
                 src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1200&auto=format&fit=crop"
-                alt="Biometric Neural Network Matrix"
-                className="h-[360px] w-full rounded-2xl object-cover opacity-80"
+                alt="Neural Matrix Network"
+                className="h-full w-full object-cover opacity-85"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#030712] via-transparent to-transparent" />
-              
-              <div className="absolute bottom-8 left-8 right-8 rounded-2xl border border-cyan-400/30 bg-[#030712]/90 p-4 backdrop-blur-md flex items-center justify-between">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-xl bg-white/90 p-3.5 backdrop-blur-md">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-400/20 text-cyan-300 border border-cyan-400/30">
-                    <Activity size={20} />
-                  </div>
+                  <span className={`${iconBadge} h-10 w-10`}><Activity size={20} /></span>
                   <div>
-                    <div className="text-xs font-bold text-white">InsightFace Inference Pipeline</div>
-                    <div className="text-[11px] text-cyan-400 font-mono">Status: Active • Multi-thread CUDA</div>
+                    <div className="text-xs font-semibold text-[var(--fg)]">InsightFace Inference Pipeline</div>
+                    <div className="text-[11px] text-[var(--muted)]">Status: Active · Multi-thread CUDA</div>
                   </div>
                 </div>
-                <span className="rounded-lg bg-emerald-500/20 px-2.5 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/30">
+                <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 border border-emerald-500/20">
                   ONLINE
                 </span>
               </div>
             </div>
           </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ───────── Metrics Banner ───────── */
+function MetricsBanner() {
+  return (
+    <section className="border-y border-[var(--line)] py-16">
+      <div className={wrap}>
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {METRICS.map((m, idx) => (
+            <div key={idx} className="border-l-2 border-[var(--accent)] pl-5">
+              <div className="text-3xl font-bold tracking-tight text-[var(--fg)] sm:text-4xl">{m.value}</div>
+              <div className="mt-1 text-sm font-semibold text-[var(--fg)]">{m.label}</div>
+              <div className="mt-0.5 text-xs text-[var(--muted)]">{m.desc}</div>
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* Metrics Banner */}
-      <section className="px-6 py-16">
-        <div className="mx-auto max-w-6xl rounded-3xl border border-white/10 bg-white/[0.02] p-8 backdrop-blur-xl">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {METRICS.map((m, idx) => (
-              <div key={idx} className="border-l-2 border-cyan-400/80 pl-5">
-                <div className="text-3xl font-black text-white">{m.value}</div>
-                <div className="mt-1 text-sm font-bold text-cyan-300">{m.label}</div>
-                <div className="mt-0.5 text-xs text-slate-400">{m.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+/* ───────── Pipeline Workflow Cards ───────── */
+function PipelineWorkflow() {
+  return (
+    <section className="py-24 sm:py-32">
+      <div className={wrap}>
+        <Reveal className="mb-16 text-center max-w-3xl mx-auto">
+          <Eyebrow icon={Cpu}>End-To-End Ingestion Workflow</Eyebrow>
+          <h2 className={`${h2} mt-4`}>How the computer vision stack processes live video</h2>
+        </Reveal>
 
-      {/* Pipeline Step Cards */}
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-6xl">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
-              End-To-End Ingestion Workflow
-            </span>
-            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-5xl text-white">
-              How the computer vision stack processes live video.
-            </h2>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {ARCHITECTURE_STEPS.map(({ number, title, tagline, description, icon: Icon, stat }) => (
-              <div
-                key={number}
-                className="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-6 transition-all duration-300 hover:border-cyan-400/50 hover:bg-white/[0.07] flex flex-col justify-between"
-              >
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {PIPELINE_STEPS.map(({ number, title, tagline, description, icon: Icon, stat }, i) => (
+            <Drift key={number} from={i % 2 === 0 ? 20 : -20} to={i % 2 === 0 ? -20 : 20} className="h-full">
+              <div className="group flex h-full flex-col justify-between rounded-[2rem] border border-[var(--line)] bg-white/70 p-8 transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-xl">
                 <div>
-                  <div className="flex items-center justify-between mb-5">
-                    <span className="rounded-xl bg-cyan-400/10 border border-cyan-400/20 px-3 py-1 text-xs font-extrabold text-cyan-300">
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="rounded-full border border-[var(--line)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--fg)]">
                       {number}
                     </span>
-                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/5 text-cyan-400 border border-white/10 group-hover:bg-cyan-400 group-hover:text-slate-950 transition-colors">
-                      <Icon size={18} />
+                    <span className={`${iconBadge} h-12 w-12 transition-transform duration-300 group-hover:scale-110 group-hover:bg-[var(--accent)] group-hover:text-white`}>
+                      <Icon size={22} />
                     </span>
                   </div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
-                    {title}
-                  </h3>
-                  <p className="mt-1 text-xs font-semibold text-cyan-400/90">{tagline}</p>
-                  <p className="mt-3 text-xs leading-relaxed text-slate-400 font-light">
-                    {description}
-                  </p>
+                  <h3 className="text-xl font-semibold tracking-tight">{title}</h3>
+                  <p className="mt-1 text-xs font-medium text-[var(--accent)]">{tagline}</p>
+                  <p className="mt-4 text-sm leading-relaxed text-[var(--muted)]">{description}</p>
                 </div>
-
-                <div className="mt-6 pt-4 border-t border-white/10 text-[11px] font-mono text-slate-400 group-hover:text-cyan-300">
+                <div className="mt-8 pt-4 border-t border-[var(--line)] text-xs font-mono text-[var(--muted)]">
                   {stat}
                 </div>
               </div>
-            ))}
-          </div>
+            </Drift>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* Footer CTA */}
-      <section className="px-6 py-20 text-center">
-        <div className="mx-auto max-w-4xl rounded-3xl border border-cyan-500/30 bg-gradient-to-b from-cyan-950/20 to-[#030712] p-10 backdrop-blur-2xl">
-          <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-            Experience real-time recognition live.
+/* ───────── CTA Section ───────── */
+function AboutCTA() {
+  return (
+    <section className="relative overflow-hidden border-t border-[var(--line)] py-32 text-center">
+      <div className={wrap}>
+        <Reveal>
+          <Eyebrow icon={CheckCircle2}>Get started</Eyebrow>
+          <h2 className="mx-auto mt-5 max-w-3xl text-[clamp(2.2rem,5vw,4.5rem)] font-semibold leading-[1.02] tracking-[-0.04em]">
+            Ready to experience real-time recognition live?
           </h2>
-          <p className="mt-4 text-sm text-slate-300 font-light max-w-xl mx-auto">
-            Test our webcam-based face detection and liveness scoring directly inside the admin console.
+          <p className="mx-auto mt-4 max-w-xl text-sm text-[var(--muted)] sm:text-base">
+            Test webcam-based face detection and liveness scoring directly inside our institutional demo console.
           </p>
-          <div className="mt-8 flex justify-center gap-4">
+          <div className="mt-10 flex justify-center gap-4">
             <Link
-              to="/admin"
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-6 py-3.5 text-xs font-extrabold text-slate-950 shadow-[0_0_25px_rgba(34,211,238,0.4)] transition-all hover:scale-105"
+              to="/contact"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--btn-bg)] px-8 py-4 text-sm font-medium text-[var(--btn-fg)] transition-transform hover:scale-[1.04]"
             >
-              <span>Launch Live Console</span>
-              <ArrowRight size={14} />
+              <span>Book a Demo</span>
+              <ArrowUpRight size={16} />
             </Link>
           </div>
-        </div>
-      </section>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
 
-      {/* Simple Footer */}
-      <footer className="border-t border-white/10 px-6 py-8 text-center text-xs text-slate-500 font-mono">
-        © {new Date().getFullYear()} Presence AI Inc. All rights reserved.
-      </footer>
+/* ───────── Footer Component (Matching HomePage) ───────── */
+function Footer() {
+  const ref = useRef(null);
+  const y = useSlide(ref, '45%', '0%', { offset: ['start end', 'end end'], always: true });
+  return (
+    <footer ref={ref} className="border-t border-[var(--line)] pt-16">
+      <div className={`${wrap} flex flex-col justify-between gap-10 sm:flex-row`}>
+        <nav className="flex flex-col gap-2 text-sm" aria-label="Footer navigation">
+          <Link to="/about" className="text-[var(--muted)] hover:text-[var(--fg)]">About</Link>
+          <Link to="/contact" className="text-[var(--muted)] hover:text-[var(--fg)]">Contact</Link>
+          <Link to="/privacy" className="text-[var(--muted)] hover:text-[var(--fg)]">Privacy Policy</Link>
+        </nav>
+        <div className="flex gap-6 text-sm text-[var(--muted)]">
+          {['LinkedIn', 'Facebook', 'Instagram', 'YouTube'].map((s) => <a key={s} href="#" className="hover:text-[var(--fg)]">{s}</a>)}
+        </div>
+      </div>
+      <div className="overflow-hidden">
+        <motion.div
+          style={{ y, maskImage: 'linear-gradient(to bottom, #000 35%, transparent 95%)', WebkitMaskImage: 'linear-gradient(to bottom, #000 35%, transparent 95%)' }}
+          className="select-none text-center text-[clamp(4.5rem,21vw,19rem)] font-semibold leading-[0.85] tracking-[-0.06em]"
+        >
+          presence
+        </motion.div>
+      </div>
+      <div className={`${wrap} flex flex-col justify-between gap-2 border-t border-[var(--line)] py-6 text-xs text-[var(--muted)] sm:flex-row`}>
+        <span>© {new Date().getFullYear()} Presence AI Inc. All rights reserved.</span>
+        <span>Face-recognition attendance for educational institutions</span>
+      </div>
+    </footer>
+  );
+}
+
+/* ───────── Main About Page Export ───────── */
+export default function AboutPage() {
+  return (
+    <div style={THEME} className="min-h-screen bg-[var(--bg)] text-[var(--fg)] antialiased [overflow-x:clip]">
+      <Navbar />
+      <AboutHero />
+      <MissionSection />
+      <MetricsBanner />
+      <PipelineWorkflow />
+      <AboutCTA />
+      <Footer />
     </div>
   );
 }

@@ -1,50 +1,44 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ScanFace, ArrowLeft, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { ScanFace, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { THEME } from './theme';
 
 export default function AuthLayout({ children, icon: Icon = ScanFace, title, subtitle }) {
   return (
-    <div className="min-h-screen bg-[#030712] text-white antialiased flex flex-col justify-between font-['Poppins',sans-serif] relative overflow-hidden">
-      {/* Background Glows */}
-      <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[800px] -translate-x-1/2 bg-[radial-gradient(50%_50%_at_50%_30%,rgba(34,211,238,0.22),rgba(59,130,246,0.1)_60%,transparent_100%)] blur-3xl" />
+    <div style={THEME} className="h-screen w-screen bg-[var(--bg)] text-[var(--fg)] antialiased flex flex-col justify-between font-['Poppins',sans-serif] overflow-hidden">
+      {/* Background Soft Color Wash */}
+      <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[600px] -translate-x-1/2 bg-[radial-gradient(circle,rgba(0,154,231,.10),transparent_70%)] blur-3xl" />
 
       {/* Top Header Navigation */}
-      <header className="relative z-10 w-full px-6 py-6 max-w-7xl mx-auto flex items-center justify-between">
-        <Link to="/" className="group flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 p-0.5 shadow-[0_0_15px_rgba(34,211,238,0.4)]">
-            <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-[#030712]">
-              <ScanFace size={18} className="text-cyan-400" />
-            </div>
-          </div>
-          <span className="text-base font-extrabold text-white group-hover:text-cyan-300 transition-colors">
-            Presence<span className="text-cyan-400">.</span>
+      <header className="relative z-10 w-full px-6 py-4 max-w-7xl mx-auto flex items-center justify-between shrink-0">
+        <Link to="/" className="group flex items-center gap-2.5 text-[var(--fg)]">
+          <span className="grid h-8 w-8 place-items-center transition-transform duration-300">
+            <img src="/logo.png" className='w-9/10 h-9/10 object-center object-contain' alt="" />
           </span>
+          <span className="text-base font-semibold tracking-tight">Presence</span>
         </Link>
 
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-slate-300 hover:text-white hover:border-cyan-500/40 transition-all"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-white/70 px-3.5 py-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:border-[var(--accent-line)] transition-all backdrop-blur"
         >
-          <ArrowLeft size={14} />
+          <ArrowLeft size={13} />
           <span>Back to Home</span>
         </Link>
       </header>
 
-      {/* Main Glass Card Container */}
-      <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md">
-          <div className="rounded-3xl border border-cyan-500/30 bg-[#060D1A]/90 p-8 shadow-[0_25px_70px_rgba(0,0,0,0.95)] backdrop-blur-2xl relative overflow-hidden">
+      {/* Main Card Container */}
+      <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-1 overflow-hidden">
+        <div className="w-full max-w-md my-auto">
+          <div className="rounded-[2.2rem] border border-[var(--line)] bg-white p-6 sm:p-7 shadow-[0_20px_50px_-25px_rgba(0,0,0,0.08)] backdrop-blur-xl relative overflow-hidden">
             
-            {/* Top Cyan Line Accent */}
-            <div aria-hidden className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_10px_rgba(34,211,238,0.9)]" />
-
             {/* Header Icon Badge */}
-            <div className="flex flex-col items-center text-center mb-8">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400/10 border border-cyan-400/30 text-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.2)] mb-4">
-                <Icon size={26} />
+            <div className="flex flex-col items-center text-center mb-5">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--accent-soft)] border border-[var(--accent-line)] text-[var(--accent)] shadow-sm mb-2.5">
+                <Icon size={22} />
               </div>
-              <h1 className="text-2xl font-extrabold text-white tracking-tight">{title}</h1>
-              {subtitle && <p className="mt-2 text-xs text-slate-400 font-light leading-relaxed">{subtitle}</p>}
+              <h1 className="text-xl font-semibold tracking-tight text-[var(--fg)]">{title}</h1>
+              {subtitle && <p className="mt-1 text-xs text-[var(--muted)] font-normal leading-relaxed">{subtitle}</p>}
             </div>
 
             {/* Auth Form / Children */}
@@ -52,15 +46,15 @@ export default function AuthLayout({ children, icon: Icon = ScanFace, title, sub
           </div>
 
           {/* Bottom Security Assurance Tag */}
-          <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-500 font-mono">
-            <ShieldCheck size={14} className="text-emerald-400" />
+          <div className="mt-3 flex items-center justify-center gap-2 text-[11px] text-[var(--muted)] font-mono">
+            <ShieldCheck size={13} className="text-emerald-600" />
             <span>256-Bit Encrypted Biometric Transport</span>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 py-6 text-center text-xs text-slate-600 font-mono">
+      <footer className="relative z-10 py-3 text-center text-xs text-[var(--muted)] font-mono border-t border-[var(--line)] shrink-0">
         © {new Date().getFullYear()} Presence AI Inc. All rights reserved.
       </footer>
     </div>
