@@ -4,6 +4,7 @@ import OverviewTab from './Tabs/OverviewTab';
 import SectionsTab from './Tabs/SectionsTab/SectionsTab';
 import EnrollmentTab from './Tabs/EnrollmentTab/EnrollmentTab';
 import api from '../../services/axios';
+import { THEME } from '../../pages/theme';
 
 /* ── Nav config ─────────────────────────────────────────────── */
 const NAV = [
@@ -63,10 +64,10 @@ function MainDashboard() {
   /* ── 1. LOADING STATE ───────────────────────────────────────── */
   if (fetchingStaffDetails) {
     return (
-      <section className="w-full h-screen grid place-items-center bg-[#050A12] text-white font-['Poppins',sans-serif] antialiased">
+      <section style={THEME} className="w-full h-screen grid place-items-center bg-[var(--bg)] text-[var(--fg)] antialiased font-['Poppins',sans-serif]">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 size={36} className="text-cyan-400 animate-spin" />
-          <p className="text-sm text-slate-400 tracking-wide">Fetching Details...</p>
+          <Loader2 size={36} className="text-[var(--accent)] animate-spin" />
+          <p className="text-sm text-[var(--muted)] tracking-wide">Fetching Details...</p>
         </div>
       </section>
     );
@@ -75,14 +76,14 @@ function MainDashboard() {
   /* ── 2. ACCESS DENIED ───────────────────────────────────────── */
   if (!accessGranted) {
     return (
-      <section className="w-full h-screen grid place-items-center bg-[#050A12] text-white font-['Poppins',sans-serif] antialiased">
+      <section style={THEME} className="w-full h-screen grid place-items-center bg-[var(--bg)] text-[var(--fg)] antialiased font-['Poppins',sans-serif]">
         <div className="flex flex-col items-center gap-5 text-center px-6">
-          <div className="h-16 w-16 rounded-2xl grid place-items-center border border-red-500/30 bg-red-500/10 shadow-[0_0_30px_rgba(239,68,68,0.2)]">
-            <ShieldX size={30} className="text-red-400" />
+          <div className="h-16 w-16 rounded-2xl grid place-items-center border border-rose-500/20 bg-rose-500/10 shadow-sm">
+            <ShieldX size={30} className="text-rose-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Access Denied</h1>
-            <p className="text-sm text-slate-500 mt-1.5 max-w-xs">
+            <h1 className="text-2xl font-semibold tracking-tight text-[var(--fg)]">Access Denied</h1>
+            <p className="text-sm text-[var(--muted)] mt-1.5 max-w-xs">
               You don't have permission to view this dashboard. Contact your administrator.
             </p>
           </div>
@@ -96,24 +97,22 @@ function MainDashboard() {
   const ActiveTabComponent = TAB_COMPONENTS[activeTab] ?? OverviewTab;
 
   return (
-    <section className="w-full h-screen flex items-stretch bg-[#050A12] text-white font-['Poppins',sans-serif] antialiased [overflow-x:clip]">
+    <section style={THEME} className="w-full h-screen flex items-stretch bg-[var(--bg)] text-[var(--fg)] antialiased [overflow-x:clip] font-['Poppins',sans-serif]">
 
       {/* ── Sidebar ── */}
       <aside className="
         w-16 sm:w-20 lg:w-64
         shrink-0 h-full
-        border-r border-white/[0.08] bg-white/[0.02] backdrop-blur-xl
+        border-r border-[var(--line)] bg-white/70 backdrop-blur-xl
         flex flex-col p-3 sm:p-4 lg:p-6
         transition-[width] duration-300
       ">
-        <div className="flex items-center justify-center lg:justify-start gap-2 mb-8 lg:mb-10 lg:px-2">
-          <img
-            src="/logo.png"
-            alt="Presence Vision logo"
-            className="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 shrink-0 object-contain"
-          />
-          <h2 className="hidden lg:block text-base font-bold tracking-tight whitespace-nowrap">
-            Presence Vision
+        <div className="flex items-center justify-center lg:justify-start gap-2.5 mb-8 lg:mb-10 lg:px-2">
+          <span className="grid h-9 w-9 place-items-center flex items-center justify-center">
+            <img src="/logo.png" className="w-9/10 h-9/10 object-center object-contain" alt="" />
+          </span>
+          <h2 className="hidden lg:block text-base font-semibold tracking-tight whitespace-nowrap text-[var(--fg)]">
+            Presence
           </h2>
         </div>
 
@@ -124,20 +123,20 @@ function MainDashboard() {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                title={label} // tooltip when label is hidden
-                className={`group flex items-center justify-center lg:justify-start gap-3 rounded-xl
+                title={label}
+                className={`group flex items-center justify-center lg:justify-start gap-3 rounded-2xl
                   px-3 lg:px-4 py-3 text-sm font-medium transition-all duration-300 border ${
                     active
-                      ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.15)]'
-                      : 'border-transparent text-slate-400 hover:text-white hover:bg-white/[0.05]'
+                      ? 'border-[var(--accent-line)] bg-[var(--accent-soft)] text-[var(--accent)] shadow-sm'
+                      : 'border-transparent text-[var(--muted)] hover:text-[var(--fg)] hover:bg-black/[0.03]'
                   }`}
               >
                 <Icon
                   size={18}
                   className={`shrink-0 ${
                     active
-                      ? 'text-cyan-300'
-                      : 'text-slate-500 group-hover:text-cyan-300 transition-colors'
+                      ? 'text-[var(--accent)]'
+                      : 'text-[var(--muted)] group-hover:text-[var(--fg)] transition-colors'
                   }`}
                 />
                 <span className="hidden lg:inline whitespace-nowrap">{label}</span>
@@ -146,26 +145,27 @@ function MainDashboard() {
           })}
         </nav>
       </aside>
-      {/* ── Main Column ── */}
-      <div className="flex-1 h-full flex flex-col min-w-0">
 
-        <header className="h-20 shrink-0 border-b border-white/[0.08] flex items-center justify-between px-8">
+      {/* ── Main Column ── */}
+      <div className="flex-1 h-full flex flex-col min-w-0 bg-[var(--bg)]">
+
+        <header className="h-20 shrink-0 border-b border-[var(--line)] flex items-center justify-between px-8 bg-white/50 backdrop-blur-md">
           <div>
-            <h1 className="text-xl font-bold tracking-tight capitalize">{activeNav.label}</h1>
-            <p className="text-xs text-slate-500 mt-0.5">{activeNav.blurb}</p>
+            <h1 className="text-xl font-semibold tracking-tight capitalize text-[var(--fg)]">{activeNav.label}</h1>
+            <p className="text-xs text-[var(--muted)] mt-0.5">{activeNav.blurb}</p>
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="hidden sm:block text-[11px] font-bold uppercase tracking-widest text-cyan-400">
+            <span className="hidden sm:block text-[11px] font-semibold uppercase tracking-widest text-[var(--accent)]">
               Fall 2026
             </span>
-            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 grid place-items-center text-slate-950 text-sm font-bold shadow-[0_0_20px_rgba(34,211,238,0.35)]">
+            <div className="h-9 w-9 rounded-full bg-[var(--accent)] text-white grid place-items-center text-sm font-semibold shadow-sm">
               A
             </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4">
+        <main className="flex-1 overflow-y-auto p-6 bg-[var(--bg)]">
           <ActiveTabComponent
             isActive
             staffDetails={staffDetails}

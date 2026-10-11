@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BarLoader } from 'react-spinners';
 import api from '../../../../../services/axios';
+import { Plus, X } from 'lucide-react';
 
 function CreateSection({ onClose }) {
   const [loading, setLoading] = useState(false);
@@ -29,66 +30,41 @@ function CreateSection({ onClose }) {
   }
 
   return (
-    <div className="w-full h-full flex flex-col overflow-y-auto bg-[#050A12]">
+    <div className="w-full h-full flex flex-col overflow-y-auto bg-[var(--bg)] text-[var(--fg)]">
       {/* ---------- Hero / Header ---------- */}
-      <div className="relative overflow-hidden border-b border-cyan-400/10">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(34,211,238,0.12),transparent_55%)]" />
-        <div className="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
-
+      <div className="relative overflow-hidden border-b border-[var(--line)] bg-white/50 backdrop-blur-md">
         <div className="relative px-8 pt-7 pb-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-slate-500">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[var(--muted)]">
               <span>Sections</span>
-              <span className="text-slate-700">/</span>
-              <span className="text-cyan-300/80">Create</span>
+              <span className="text-[var(--line)]">/</span>
+              <span className="text-[var(--accent)] font-semibold">Create</span>
             </div>
 
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="group inline-flex items-center gap-2 rounded-lg border border-slate-700/60 bg-slate-900/60 px-3.5 py-2 text-sm text-slate-300 transition-all hover:border-red-400/40 hover:text-red-200 hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="group inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm text-[var(--fg)] transition-transform hover:scale-[1.04] disabled:opacity-40 shadow-sm"
             >
-              <svg
-                className="h-4 w-4 transition-transform group-hover:rotate-90"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-              Close
+              <X size={15} className="transition-transform group-hover:rotate-90" />
+              <span>Close</span>
             </button>
           </div>
 
           <div className="mt-6 flex items-start gap-5">
-            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-cyan-400/40 bg-gradient-to-br from-cyan-400/20 to-cyan-400/5 text-cyan-100 shadow-[0_0_30px_-8px_rgba(34,211,238,0.5)]">
-              <svg
-                className="h-7 w-7"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
+            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-[var(--accent-line)] bg-[var(--accent-soft)] text-[var(--accent)] shadow-sm">
+              <Plus size={28} />
             </div>
 
             <div className="min-w-0 flex-1">
-              <span className="inline-flex items-center rounded-md border border-cyan-400/30 bg-cyan-400/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wider text-cyan-200">
+              <span className="inline-flex items-center rounded-full border border-[var(--accent-line)] bg-[var(--accent-soft)] px-3 py-0.5 text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">
                 New Section
               </span>
-              <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-100">
+              <h1 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--fg)]">
                 Create a Section
               </h1>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm text-[var(--muted)]">
                 Fill in the details below to add a new section.
               </p>
             </div>
@@ -99,9 +75,9 @@ function CreateSection({ onClose }) {
       {/* ---------- Form Body ---------- */}
       <form
         onSubmit={handleSubmit}
-        className="flex flex-1 flex-col px-8 py-7 gap-6"
+        className="flex flex-1 flex-col px-8 py-8 gap-6 max-w-full"
       >
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <Field
             label="Course Code"
             name="course_code"
@@ -120,38 +96,25 @@ function CreateSection({ onClose }) {
             label="Section Name"
             name="name"
             id="name"
-            placeholder="e.g. BS DS Fall 2025 – Afternoon – B"
+            placeholder="e.g. BS DS Fall 2026 – Afternoon – B"
             disabled={loading}
             className="md:col-span-2"
           />
         </div>
 
         {error && (
-          <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-            <svg
-              className="mt-0.5 h-4 w-4 shrink-0"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
+          <div className="flex items-start gap-3 rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-700">
             <span>{error}</span>
           </div>
         )}
 
         {/* ---------- Action Bar ---------- */}
-        <div className="mt-auto flex items-center justify-end gap-3 border-t border-slate-800/60 pt-5">
+        <div className="mt-auto flex items-center justify-end gap-4 border-t border-[var(--line)] pt-6">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="rounded-lg px-4 py-2.5 text-sm text-slate-400 transition-all hover:text-slate-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-slate-400"
+            className="rounded-full px-5 py-3 text-sm font-medium text-[var(--muted)] transition-all hover:text-[var(--fg)] disabled:opacity-40"
           >
             Cancel
           </button>
@@ -159,25 +122,14 @@ function CreateSection({ onClose }) {
           <button
             type="submit"
             disabled={loading}
-            className="relative inline-flex min-w-[130px] items-center justify-center gap-2 overflow-hidden rounded-lg border border-cyan-400/40 bg-cyan-400/10 px-6 py-2.5 text-sm font-medium text-cyan-100 transition-all hover:border-cyan-400/70 hover:bg-cyan-400/20 hover:shadow-[0_0_25px_-5px_rgba(34,211,238,0.5)] disabled:cursor-not-allowed disabled:opacity-80"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--btn-bg)] px-7 py-3 text-sm font-medium text-[var(--btn-fg)] transition-transform hover:scale-[1.02] shadow-sm disabled:opacity-80"
           >
             {loading ? (
-              <BarLoader color="#67e8f9" width={80} height={3} />
+              <BarLoader color="#009ae7" width={80} height={3} />
             ) : (
               <>
-                <svg
-                  className="h-4 w-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                Create
+                <Plus size={16} />
+                <span>Create</span>
               </>
             )}
           </button>
@@ -187,13 +139,12 @@ function CreateSection({ onClose }) {
   );
 }
 
-/* -------------------- Reusable Field -------------------- */
 function Field({ label, name, id, placeholder, disabled, className = '' }) {
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       <label
         htmlFor={id || name}
-        className="text-xs font-medium uppercase tracking-wider text-slate-400"
+        className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]"
       >
         {label}
       </label>
@@ -205,7 +156,7 @@ function Field({ label, name, id, placeholder, disabled, className = '' }) {
         required
         disabled={disabled}
         autoComplete="off"
-        className="w-full rounded-lg border border-slate-700/60 bg-slate-900/50 px-4 py-2.5 text-slate-100 placeholder:text-slate-600 outline-none transition-all focus:border-cyan-400/60 focus:bg-slate-900/80 focus:ring-2 focus:ring-cyan-400/15 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-2xl border border-[var(--line)] bg-[var(--bg)] px-4 py-3.5 text-sm text-[var(--fg)] placeholder-[var(--muted)] outline-none transition-all focus:border-[var(--accent)] focus:bg-white focus:ring-2 focus:ring-[var(--accent-soft)] disabled:opacity-60"
       />
     </div>
   );

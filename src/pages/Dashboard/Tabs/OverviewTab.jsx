@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Users, TrendingUp, ArrowRight } from 'lucide-react';
+import { BookOpen, Users, TrendingUp, ArrowUpRight } from 'lucide-react';
 
 const MOCK_SECTIONS = [
   {
@@ -20,9 +20,9 @@ export default function OverviewTab({ onSelectSection }) {
   const totalEnrolled = MOCK_SECTIONS.reduce((a, s) => a + s.enrolled_count, 0);
 
   const METRICS = [
-    { label: 'Assigned Classes', value: MOCK_SECTIONS.length, icon: BookOpen, valueClass: 'text-white' },
-    { label: 'Total Enrolled Students', value: totalEnrolled, icon: Users, valueClass: 'text-white' },
-    { label: 'Avg. Attendance Rate', value: '91.4%', icon: TrendingUp, valueClass: 'text-emerald-400' },
+    { label: 'Assigned Classes', value: MOCK_SECTIONS.length, icon: BookOpen, valueClass: 'text-[var(--fg)]' },
+    { label: 'Total Enrolled Students', value: totalEnrolled, icon: Users, valueClass: 'text-[var(--fg)]' },
+    { label: 'Avg. Attendance Rate', value: '91.4%', icon: TrendingUp, valueClass: 'text-emerald-600' },
   ];
 
   return (
@@ -33,17 +33,17 @@ export default function OverviewTab({ onSelectSection }) {
         {METRICS.map(({ label, value, icon: Icon, valueClass }) => (
           <div
             key={label}
-            className="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-6 transition-all duration-300 hover:border-cyan-400/40 hover:bg-white/[0.06]"
+            className="group relative rounded-[2rem] border border-[var(--line)] bg-white/70 p-6 sm:p-8 backdrop-blur-xl transition-all duration-300 hover:border-[var(--accent-line)] hover:shadow-lg"
           >
             <div className="flex items-start justify-between">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
                 {label}
               </p>
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-cyan-400/10 text-cyan-300 border border-cyan-400/20 transition-colors group-hover:bg-cyan-400 group-hover:text-slate-950">
-                <Icon size={18} />
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent)] border border-[var(--accent-line)] transition-transform group-hover:scale-110">
+                <Icon size={20} />
               </span>
             </div>
-            <p className={`mt-4 text-4xl font-extrabold tracking-tight ${valueClass}`}>
+            <p className={`mt-4 text-4xl font-semibold tracking-tight ${valueClass}`}>
               {value}
             </p>
           </div>
@@ -54,10 +54,10 @@ export default function OverviewTab({ onSelectSection }) {
       <div>
         <div className="flex items-end justify-between mb-6">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-400">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
               Your Courses
             </span>
-            <h3 className="mt-1 text-2xl font-extrabold tracking-tight">
+            <h3 className="mt-1 text-2xl font-semibold tracking-tight text-[var(--fg)]">
               Taught Sections
             </h3>
           </div>
@@ -67,33 +67,35 @@ export default function OverviewTab({ onSelectSection }) {
           {MOCK_SECTIONS.map((sec) => (
             <div
               key={sec.id}
-              className="group rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-6 transition-all duration-300 hover:border-cyan-400/40 hover:bg-white/[0.06]"
+              className="group rounded-[2.5rem] border border-[var(--line)] bg-white p-8 shadow-[0_20px_50px_-25px_rgba(0,0,0,0.08)] transition-all duration-300 hover:border-[var(--accent-line)] hover:shadow-xl flex flex-col justify-between"
             >
-              <div className="flex justify-between items-start">
-                <div>
-                  <span className="text-[11px] font-bold px-2.5 py-1 bg-cyan-400/10 text-cyan-300 border border-cyan-400/20 rounded-md tracking-wider">
-                    {sec.course.code}
+              <div>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="text-xs font-semibold px-3 py-1 bg-[var(--accent-soft)] text-[var(--accent)] border border-[var(--accent-line)] rounded-full tracking-wide">
+                      {sec.course.code}
+                    </span>
+                    <h4 className="text-xl font-semibold text-[var(--fg)] mt-3 group-hover:text-[var(--accent)] transition-colors">
+                      {sec.course.name}
+                    </h4>
+                    <p className="text-sm text-[var(--muted)] mt-1">{sec.name}</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] bg-[var(--card)] px-3 py-1 rounded-full border border-[var(--line)]">
+                    <Users size={13} className="text-[var(--accent)]" />
+                    {sec.enrolled_count} students
                   </span>
-                  <h4 className="text-lg font-bold text-white mt-3 group-hover:text-cyan-300 transition-colors">
-                    {sec.course.name}
-                  </h4>
-                  <p className="text-sm text-slate-400 mt-1">{sec.name}</p>
                 </div>
-                <span className="flex items-center gap-1.5 text-xs text-slate-400 shrink-0">
-                  <Users size={13} className="text-slate-500" />
-                  {sec.enrolled_count}
-                </span>
               </div>
 
-              <div className="mt-6">
+              <div className="mt-8">
                 <button
                   onClick={() => onSelectSection?.(sec)}
-                  className="group/btn w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 text-sm font-bold transition-transform duration-300 hover:scale-[1.02] shadow-[0_0_25px_rgba(34,211,238,0.3)]"
+                  className="group/btn w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-full bg-[var(--btn-bg)] text-[var(--btn-fg)] text-sm font-medium transition-transform hover:scale-[1.02] shadow-sm"
                 >
-                  Manage Roster
-                  <ArrowRight
+                  <span>Manage Roster</span>
+                  <ArrowUpRight
                     size={16}
-                    className="transition-transform group-hover/btn:translate-x-1"
+                    className="transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
                   />
                 </button>
               </div>
