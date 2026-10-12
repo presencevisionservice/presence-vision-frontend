@@ -3,14 +3,16 @@ import { LayoutDashboard, Layers, BookOpen, ScanFace, ShieldX, Loader2 } from 'l
 import OverviewTab from './Tabs/OverviewTab';
 import SectionsTab from './Tabs/SectionsTab/SectionsTab';
 import EnrollmentTab from './Tabs/EnrollmentTab/EnrollmentTab';
+import AttendanceTab from './Tabs/AttendanceTab/AttendanceTab';
 import api from '../../services/axios';
 import { THEME } from '../../pages/theme';
 
 /* ── Nav config ─────────────────────────────────────────────── */
 const NAV = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard, blurb: 'Welcome back, Instructor' },
-  { id: 'sections', label: 'Sections', icon: Layers,           blurb: 'Manage your class sections' },
-  { id: 'enrollment', label: 'Enrollment', icon: Layers,           blurb: 'Enroll Students In Sections' },
+  { id: 'sections', label: 'Sections', icon: Layers, blurb: 'Manage your class sections' },
+  { id: 'enrollment', label: 'Enrollment', icon: Layers, blurb: 'Enroll Students In Sections' },
+  { id: 'attendance', label: 'Attendance', icon: Layers, blurb: 'Strat Section Attendance' },
 ];
 
 /* ── Tab registry: id → component ───────────────────────────── */
@@ -18,6 +20,7 @@ const TAB_COMPONENTS = {
   overview: OverviewTab,
   sections: SectionsTab,
   enrollment: EnrollmentTab,
+  attendance: AttendanceTab,
 };
 
 function MainDashboard() {
