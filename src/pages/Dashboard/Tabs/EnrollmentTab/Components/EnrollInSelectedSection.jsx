@@ -7,10 +7,11 @@ function EnrollInSelectedSection({ section, onClose, onSuccess }) {
   const [sessionActive, setSessionActive] = useState(false);
   const [loadingSession, setLoadingSession] = useState(false);
   
-  // Student Form State
+  // Student Form State & Already Registered Toggle
   const [studentName, setStudentName] = useState('');
   const [registrationNumber, setRegistrationNumber] = useState('');
   const [department, setDepartment] = useState('');
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
   
   // Camera & Device State
   const [videoDevices, setVideoDevices] = useState([]);
@@ -185,7 +186,7 @@ function EnrollInSelectedSection({ section, onClose, onSuccess }) {
   // 4. Capture Frame & Push to Redis Queue via Django
   const handleCaptureAndEnroll = async (e) => {
     e.preventDefault();
-    if (!studentName || !registrationNumber) {
+    if (!alreadyRegistered && (!studentName || !registrationNumber)) {
       setStatusMessage({ type: 'error', text: 'Please enter Student Name and Registration Number.' });
       return;
     }
@@ -214,7 +215,8 @@ function EnrollInSelectedSection({ section, onClose, onSuccess }) {
         student_name: studentName.trim(),
         registration_number: registrationNumber.trim(),
         department: department.trim() || 'General',
-        frame_data: base64Frame
+        frame_data: base64Frame,
+        already_registered: alreadyRegistered
       };
 
       await api.post('/api/enroll/', payload);
@@ -287,10 +289,10 @@ function EnrollInSelectedSection({ section, onClose, onSuccess }) {
       {/* Main Content Area */}
       <div className="w-full h-[90%] grid grid-cols-1 lg:grid-cols-10 gap-5 pt-5 overflow-hidden px-6 pb-6">
         
-        {/* LEFT SIDE: 70% - Expanded Webcam & Compact Single-Row Form (No Scrolling) */}
+        {/* LEFT SIDE: 70% - Original Full Height Webcam Feed & Professional Toggle Form */}
         <div className="lg:col-span-7 h-full flex flex-col gap-3 overflow-hidden pr-1">
           
-          {/* Webcam Box & Device Selector */}
+          {/* Webcam Box (Original Expanded Flex Height) */}
           <div className="relative w-full flex-1 min-h-0 rounded-xl border border-[var(--line)] bg-slate-950 overflow-hidden shadow-lg flex items-center justify-center">
             {loadingSession ? (
               <div className="absolute inset-flex flex-col items-center justify-center p-6 text-center text-[var(--accent)] bg-slate-950/90 z-30">
@@ -317,7 +319,6 @@ function EnrollInSelectedSection({ section, onClose, onSuccess }) {
               LIVE AI FEED (1 FACE REQ.)
             </div>
 
-            {/* Broadcasting Status Toast Overlay (Bottom-Left of Video) */}
             {statusMessage.text && (
               <div className={`absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-md p-2.5 rounded-xl text-xs font-medium border flex items-center gap-2 backdrop-blur-md z-20 shadow-lg ${
                 statusMessage.type === 'error' 
@@ -331,7 +332,6 @@ function EnrollInSelectedSection({ section, onClose, onSuccess }) {
               </div>
             )}
 
-            {/* Camera Selection Dropdown */}
             {videoDevices.length > 0 && (
               <div className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/60 border border-white/20 backdrop-blur-md z-20 shadow-lg">
                 <Camera size={14} className="text-white shrink-0" />
@@ -354,38 +354,63 @@ function EnrollInSelectedSection({ section, onClose, onSuccess }) {
             </div>
           </div>
 
-          {/* Compact Student Form in Single Row */}
-          <div className="rounded-xl border border-[var(--line)] bg-white p-3 shrink-0">
+          {/* Compact Form & Professional Toggle Switch */}
+          <div className="rounded-xl border border-[var(--line)] bg-white p-3 shrink-0 flex flex-col gap-2.5 shadow-sm">
+            
+            {/* Professional Toggle Switch */}
+            <div className="flex items-center justify-between px-3 py-2 rounded-xl border border-[var(--line)] bg-[var(--bg)]">
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-[var(--fg)]">Already Registered in System</span>
+                <span className="text-[10px] text-[var(--muted)]">Recognize face embedding and add to section roster</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAlreadyRegistered(!alreadyRegistered)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  alreadyRegistered ? 'bg-[var(--accent)]' : 'bg-slate-300'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                    alreadyRegistered ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+
             <form onSubmit={handleCaptureAndEnroll} className="flex flex-col sm:flex-row items-center gap-2.5">
               <div className="flex-1 w-full">
                 <input
                   type="text"
-                  required
-                  placeholder="Student Name *"
+                  required={!alreadyRegistered}
+                  disabled={alreadyRegistered}
+                  placeholder={alreadyRegistered ? "Bypassed (Facial Recognition)" : "Student Name *"}
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
-                  className="w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 py-2.5 text-xs text-[var(--fg)] placeholder-[var(--muted)] outline-none transition focus:border-[var(--accent)] focus:bg-white focus:ring-2 focus:ring-[var(--accent-soft)]"
+                  className="w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 py-2.5 text-xs text-[var(--fg)] placeholder-[var(--muted)] outline-none transition focus:border-[var(--accent)] focus:bg-white focus:ring-2 focus:ring-[var(--accent-soft)] disabled:opacity-50 disabled:bg-slate-100"
                 />
               </div>
 
               <div className="flex-1 w-full">
                 <input
                   type="text"
-                  required
-                  placeholder="Registration No. *"
+                  required={!alreadyRegistered}
+                  disabled={alreadyRegistered}
+                  placeholder={alreadyRegistered ? "Bypassed (Facial Recognition)" : "Registration No. *"}
                   value={registrationNumber}
                   onChange={(e) => setRegistrationNumber(e.target.value)}
-                  className="w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 py-2.5 text-xs text-[var(--fg)] placeholder-[var(--muted)] outline-none transition focus:border-[var(--accent)] focus:bg-white focus:ring-2 focus:ring-[var(--accent-soft)]"
+                  className="w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 py-2.5 text-xs text-[var(--fg)] placeholder-[var(--muted)] outline-none transition focus:border-[var(--accent)] focus:bg-white focus:ring-2 focus:ring-[var(--accent-soft)] disabled:opacity-50 disabled:bg-slate-100"
                 />
               </div>
 
               <div className="flex-1 w-full">
                 <input
                   type="text"
-                  placeholder="Department"
+                  disabled={alreadyRegistered}
+                  placeholder={alreadyRegistered ? "Bypassed" : "Department"}
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
-                  className="w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 py-2.5 text-xs text-[var(--fg)] placeholder-[var(--muted)] outline-none transition focus:border-[var(--accent)] focus:bg-white focus:ring-2 focus:ring-[var(--accent-soft)]"
+                  className="w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 py-2.5 text-xs text-[var(--fg)] placeholder-[var(--muted)] outline-none transition focus:border-[var(--accent)] focus:bg-white focus:ring-2 focus:ring-[var(--accent-soft)] disabled:opacity-50 disabled:bg-slate-100"
                 />
               </div>
 
@@ -402,7 +427,7 @@ function EnrollInSelectedSection({ section, onClose, onSuccess }) {
                 ) : (
                   <>
                     <UserPlus size={14} />
-                    <span>Enroll</span>
+                    <span>{alreadyRegistered ? 'Recognize & Enroll' : 'Enroll'}</span>
                   </>
                 )}
               </button>
